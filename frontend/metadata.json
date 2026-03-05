@@ -1,0 +1,5 @@
+{
+  "name": "DNA Storage Simulator",
+  "description": "A professional research dashboard for DNA-based digital data storage, featuring encoding, decoding, and performance analysis modules.",
+  "requestFramePermissions": []
+}

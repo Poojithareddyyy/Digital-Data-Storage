@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Poppins", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-primary: #0F172A;
+  --color-secondary: #1E293B;
+  --color-accent: #22C55E;
+  --color-background: #F8FAFC;
+  
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-primary font-sans;
+  }
+}
+
+.dna-base-a { @apply text-blue-500 font-bold; }
+.dna-base-c { @apply text-red-500 font-bold; }
+.dna-base-g { @apply text-yellow-500 font-bold; }
+.dna-base-t { @apply text-green-500 font-bold; }
+
+.glass-card {
+  @apply bg-white rounded-2xl border border-slate-100 shadow-soft p-6;
+}
+
+.nav-link {
+  @apply px-4 py-2 text-sm font-medium text-slate-500 hover:text-accent transition-colors cursor-pointer;
+}
+
+.nav-link.active {
+  @apply text-accent border-b-2 border-accent;
+}

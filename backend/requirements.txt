@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+reedsolo
+boto3
+matplotlib
+python-multipart
+cryptography
+minio

@@ -5,3 +5,4 @@ boto3
 matplotlib
 python-multipart
 cryptography
+minio

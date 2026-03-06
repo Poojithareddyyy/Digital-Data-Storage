@@ -1,11 +1,11 @@
 import os
 from reedsolo import RSCodec
 import time
-from backend.cloud import upload_file
-from backend.security import encrypt_data
-from backend.integrity import generate_hash
-from backend.analysis import calculate_gc_content, max_homopolymer_length
-from backend.analysis_graph import plot_analysis
+from cloud import upload_file
+from security import encrypt_data
+from integrity import generate_hash
+from analysis import calculate_gc_content, max_homopolymer_length
+from analysis_graph import plot_analysis
 rsc = RSCodec(10)
 CHUNK_SIZE = 200
 

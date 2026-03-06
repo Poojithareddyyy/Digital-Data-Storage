@@ -4,8 +4,8 @@ from fastapi.responses import FileResponse
 import os
 import shutil
 
-from backend.encoder_secure import encode_file
-from backend.decoder_secure import decode_file
+from encoder_secure import encode_file
+from decoder_secure import decode_file
 
 
 app = FastAPI()

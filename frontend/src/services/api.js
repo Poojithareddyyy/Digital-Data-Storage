@@ -27,7 +27,7 @@ export const getFiles = async () => {
     return await res.json();
 };
 
-// ADD THIS MISSING FUNCTION
+// This is the function the Vercel build is currently missing
 export const downloadFile = async (filename) => {
     const res = await fetch(`${API_BASE_URL}/download/${filename}`);
     if (!res.ok) throw new Error("Download failed");

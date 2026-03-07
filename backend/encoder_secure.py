@@ -6,6 +6,7 @@ from security import encrypt_data
 from integrity import generate_hash
 from analysis import calculate_gc_content, max_homopolymer_length
 from analysis_graph import plot_analysis
+os.makedirs("storage/dna_files", exist_ok=True)
 rsc = RSCodec(10)
 CHUNK_SIZE = 200
 
@@ -86,10 +87,10 @@ def encode_file(file_path):
     print("GC Content:", gc_content, "%")
     print("Max Homopolymer Length:", homopolymer)
 
-    upload_file(dna_path, dna_filename)
-    from cloud import upload_backup
-    upload_backup(dna_path, dna_filename)
-    print("☁ Backup stored in secondary bucket")
+    #upload_file(dna_path, dna_filename)
+    #from cloud import upload_backup
+   # upload_backup(dna_path, dna_filename)
+   # print("☁ Backup stored in secondary bucket")
     plot_analysis(original_size, dna_size, encoding_time, gc_content, filename)
 
 

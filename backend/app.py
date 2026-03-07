@@ -25,7 +25,7 @@ os.makedirs(RECON_FOLDER, exist_ok=True)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://your-frontend-domain.vercel.app"], 
+    allow_origins=["*"],  # Allows all origins for the demo
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

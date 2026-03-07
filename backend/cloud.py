@@ -1,32 +1,41 @@
-# backend/cloud.py
+import os
+import shutil
 
-import boto3
+# Simulation of your buckets as local folders
+STORAGE_DIR = "storage"
+BACKUP_DIR = "dna-backup"
 
-s3 = boto3.client(
-    's3',
-    aws_access_key_id='minioadmin',
-    aws_secret_access_key='minioadmin',
-    endpoint_url='http://127.0.0.1:9000'
-)
-
-BUCKET = "dna-storage"
-BACKUP_BUCKET = "dna-backup"
-
+# Ensure directories exist
+for folder in [STORAGE_DIR, BACKUP_DIR]:
+    if not os.path.exists(folder):
+        os.makedirs(folder)
 
 def create_bucket():
-    try:
-        s3.create_bucket(Bucket=BUCKET)
-    except:
-        pass
-
+    # No action needed for local simulation
+    pass
 
 def upload_file(local_path, cloud_name):
-    s3.upload_file(local_path, BUCKET, cloud_name)
-
+    """
+    Replaces s3.upload_file. 
+    Copies encoded DNA files from /uploads to /storage.
+    """
+    dest_path = os.path.join(STORAGE_DIR, cloud_name)
+    shutil.copy(local_path, dest_path)
 
 def download_file(cloud_name, local_path):
-    s3.download_file(BUCKET, cloud_name, local_path)
-
+    """
+    Replaces s3.download_file.
+    Copies file from /storage back to a local path for decoding.
+    """
+    source_path = os.path.join(STORAGE_DIR, cloud_name)
+    if os.path.exists(source_path):
+        shutil.copy(source_path, local_path)
+    else:
+        raise FileNotFoundError(f"File {cloud_name} not found in storage.")
 
 def upload_backup(local_path, object_name):
-    s3.upload_file(local_path, BACKUP_BUCKET, object_name)
+    """
+    Replaces s3.upload_file for backups.
+    """
+    dest_path = os.path.join(BACKUP_DIR, object_name)
+    shutil.copy(local_path, dest_path)

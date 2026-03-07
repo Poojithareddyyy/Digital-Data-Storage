@@ -1,12 +1,14 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-import os
+
 import shutil
 
 from encoder_secure import encode_file
 from decoder_secure import decode_file
-
+import os
+if not os.path.exists("uploads"):
+    os.makedirs("uploads")
 
 app = FastAPI()
 

@@ -111,3 +111,13 @@ async def decode(file: UploadFile = File(...)):
         "decoded_file": output_file,
         "download_link": f"/download/{output_file}"
     }
+
+@app.get("/graph/{filename}")
+def get_graph(filename: str):
+
+    graph_path = f"storage/{filename}_dna_graph.png"
+
+    if os.path.exists(graph_path):
+        return FileResponse(graph_path)
+
+    return {"error": "Graph not found"}

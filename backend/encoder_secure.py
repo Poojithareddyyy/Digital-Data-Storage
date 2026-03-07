@@ -6,6 +6,7 @@ from security import encrypt_data
 from integrity import generate_hash
 from analysis import calculate_gc_content, max_homopolymer_length
 from analysis_graph import plot_analysis
+from dna_visualization import plot_dna_distribution
 os.makedirs("storage/dna_files", exist_ok=True)
 rsc = RSCodec(10)
 CHUNK_SIZE = 200
@@ -71,6 +72,7 @@ def encode_file(file_path):
     for line in lines:
         if "|" in line:
             dna_only += line.strip().split("|")[1]
+    graph_path = plot_dna_distribution(dna_only, filename)
 
     gc_content = calculate_gc_content(dna_only)
     homopolymer = max_homopolymer_length(dna_only)

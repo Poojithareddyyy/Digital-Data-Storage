@@ -7,8 +7,10 @@ import shutil
 from encoder_secure import encode_file
 from decoder_secure import decode_file
 import os
-if not os.path.exists("uploads"):
-    os.makedirs("uploads")
+
+UPLOAD_DIR = "uploads"
+if not os.path.exists(UPLOAD_DIR):
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 app = FastAPI()
 

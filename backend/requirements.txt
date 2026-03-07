@@ -5,3 +5,4 @@ cryptography
 pandas
 matplotlib
 numpy
+reedsolo

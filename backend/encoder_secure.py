@@ -1,7 +1,7 @@
 import os
 from reedsolo import RSCodec
 import time
-from cloud import upload_file
+#from cloud import upload_file
 from security import encrypt_data
 from integrity import generate_hash
 from analysis import calculate_gc_content, max_homopolymer_length
@@ -93,7 +93,7 @@ def encode_file(file_path):
     #from cloud import upload_backup
    # upload_backup(dna_path, dna_filename)
    # print("☁ Backup stored in secondary bucket")
-    plot_analysis(original_size, dna_size, encoding_time, gc_content, filename)
+   # plot_analysis(original_size, dna_size, encoding_time, gc_content, filename)
 
 
     print("✅ Encoding Complete")

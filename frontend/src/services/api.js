@@ -4,7 +4,7 @@ export const encodeFile = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`${API_BASE_URL}/encode`, { // Use backticks ``
+    const res = await fetch(`${API_BASE_URL}/encode`, {
         method: "POST",
         body: formData
     });
@@ -15,7 +15,7 @@ export const decodeFile = async (file) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    const res = await fetch(`${API_BASE_URL}/decode`, { // Use backticks ``
+    const res = await fetch(`${API_BASE_URL}/decode`, {
         method: "POST",
         body: formData
     });
@@ -23,6 +23,21 @@ export const decodeFile = async (file) => {
 };
 
 export const getFiles = async () => {
-    const res = await fetch(`${API_BASE_URL}/files`); // Use backticks ``
+    const res = await fetch(`${API_BASE_URL}/files`);
     return await res.json();
+};
+
+// ADD THIS MISSING FUNCTION
+export const downloadFile = async (filename) => {
+    const res = await fetch(`${API_BASE_URL}/download/${filename}`);
+    if (!res.ok) throw new Error("Download failed");
+    
+    const blob = await res.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
 };

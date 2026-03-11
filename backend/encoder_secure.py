@@ -47,19 +47,18 @@ def encode_file(file_path):
     dna_filename = filename + ".dna"
     dna_path = f"storage/dna_files/{dna_filename}"
 
+    # Update this specific section in encoder_secure.py
     with open(dna_path, "w") as f:
         f.write(f"FILENAME:{filename}\n")
         f.write(f"DATE:{time.strftime('%d-%m-%Y')}\n")
-        f.write("---\n") # The decoder now expects exactly 3 lines of header
-    
+        f.write("HASH:placeholder\n") # Added this to match the decoder's logic
+        f.write("---\n")
         for i in range(0, len(file_bytes), CHUNK_SIZE):
             chunk = file_bytes[i:i+CHUNK_SIZE]
             encoded = rsc.encode(chunk)
-
             dna_chunk = bytes_to_dna(encoded)
-
-            # store original chunk length before encoded chunk
-            f.write(str(len(chunk)) + "|" + dna_chunk + "\n")
+            # Store original length | dna
+            f.write(f"{len(chunk)}|{dna_chunk}\n")
 
     end_time = time.time()
     encoding_time = round(end_time - start_time, 3)

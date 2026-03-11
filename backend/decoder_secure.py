@@ -28,50 +28,56 @@ def dna_to_bytes(dna):
 def decode_file(dna_filename):
     local_path = f"storage/dna_files/{dna_filename}"
     if not os.path.exists(local_path):
+        print("❌ DNA file not found")
         return
 
     recovered = bytearray()
     
     with open(local_path, "r") as f:
-        first_line = f.readline().strip()
-        if first_line.startswith("FILENAME:"):
-            original_filename = first_line.replace("FILENAME:", "")
-            # Skip the next 2 lines (DATE and ---)
-            f.readline() 
-            f.readline() 
-            lines = f.readlines()
-        else:
-            original_filename = dna_filename.replace(".dna", "")
-            f.seek(0)
-            lines = f.readlines()
+        lines = f.readlines()
 
-    for line in lines:
-        if "|" not in line: continue
-        length_str, dna_chunk = line.strip().split("|")
-        original_length = int(length_str)
-        
-        encoded_bytes = dna_to_bytes(dna_chunk)
-        decoded_chunk = rsc.decode(encoded_bytes)[0]
-        recovered.extend(decoded_chunk[:original_length])
+    # Smart Header Detection
+    data_start_index = 0
+    original_filename = dna_filename.replace(".dna", "")
+    
+    for i, line in enumerate(lines):
+        if "FILENAME:" in line:
+            original_filename = line.split(":")[1].strip()
+        if "---" in line:
+            data_start_index = i + 1
+            break
+            
+    # Process only lines after the '---' separator
+    for line in lines[data_start_index:]:
+        if "|" not in line:
+            continue
+        try:
+            length_str, dna_chunk = line.strip().split("|")
+            original_length = int(length_str)
+            encoded_bytes = dna_to_bytes(dna_chunk)
+            decoded_chunk = rsc.decode(encoded_bytes)[0]
+            recovered.extend(decoded_chunk[:original_length])
+        except Exception as e:
+            print(f"Skipping malformed line: {e}")
 
-    # APPLY DECRYPTION TO THE FULL BYTEARRAY
+    # Decrypt the full bytes at once
     final_data = bytes(recovered)
     try:
         from security import decrypt_data
         decrypted = decrypt_data(final_data)
-        if decrypted: # Ensure decryption didn't return None
+        if decrypted:
             final_data = decrypted
-    except Exception as e:
-        print(f"Decryption skipped or failed: {e}")
+    except:
+        pass
 
-    # FORCE PATH TO MATCH app.py EXPECTATIONS
-    output_path = f"storage/reconstructed/{original_filename}"
+    # Ensure the directory exists
     os.makedirs("storage/reconstructed", exist_ok=True)
+    output_path = f"storage/reconstructed/{original_filename}"
 
     with open(output_path, "wb") as f:
         f.write(final_data)
 
-    print(f"✅ Reconstructed: {output_path}")
+    print(f"✅ Decoding Complete: {output_path}")
 
 
 

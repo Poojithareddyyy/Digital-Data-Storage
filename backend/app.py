@@ -56,21 +56,17 @@ def get_files():
 
 @app.get("/download/{filename}")
 async def download_file(filename: str):
-    # This search order ensures we find the file regardless of where it's stored
-    possible_paths = [
+    # Check all possible storage locations
+    paths = [
         os.path.join("storage/reconstructed", filename),
         os.path.join("storage/dna_files", filename),
         os.path.join("storage", filename)
     ]
     
-    for path in possible_paths:
+    for path in paths:
         if os.path.exists(path):
-            return FileResponse(
-                path=path,
-                filename=filename,
-                media_type='application/octet-stream'
-            )
-    
+            return FileResponse(path=path, filename=filename, media_type='application/octet-stream')
+            
     return {"error": "File not found"}
 
 
@@ -102,17 +98,16 @@ async def encode(file: UploadFile = File(...)):
 
 @app.post("/decode")
 async def decode(file: UploadFile = File(...)):
-    # 1. Save DNA file
-    dna_path = os.path.join("storage/dna_files", file.filename)
+    dna_path = f"storage/dna_files/{file.filename}"
     with open(dna_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # 2. Run decoder
+    # Trigger the fixed decoder
     decode_file(file.filename)
 
-    # 3. Predict the output filename (stripping .dna)
+    # Clean the filename for the response
     output_filename = file.filename.replace(".dna", "")
-
+    
     return {
         "status": "success",
         "message": "DNA decoded successfully",

@@ -66,17 +66,17 @@ def decode_file(dna_filename):
     # If secure mode enabled, try decrypt
     try:
         from security import decrypt_data
-        recovered = decrypt_data(bytes(recovered))
-    except:
-        pass
+        final_data = decrypt_data(bytes(recovered))
+    except Exception as e:
+        print(f"Decryption failed: {e}")
+        final_data = bytes(recovered)
 
     output_path = f"storage/reconstructed/{original_filename}"
 
     with open(output_path, "wb") as f:
-        f.write(recovered)
+        f.write(final_data)
 
     print("✅ Decoding Complete")
-    print("Recovered file saved at:", output_path)
 
 
 

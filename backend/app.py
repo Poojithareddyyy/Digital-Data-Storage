@@ -56,17 +56,21 @@ def get_files():
 
 @app.get("/download/{filename}")
 async def download_file(filename: str):
-    # Ensure we are looking in the correct storage directory
-    file_path = os.path.join("storage", filename)
+    # Check Reconstructed folder first (for decoded files)
+    recon_path = os.path.join("storage/reconstructed", filename)
+    # Check DNA folder (for encoded files)
+    dna_path = os.path.join("storage/dna_files", filename)
     
-    if not os.path.exists(file_path):
-        return {"error": "File not found"}
+    if os.path.exists(recon_path):
+        target_path = recon_path
+    elif os.path.exists(dna_path):
+        target_path = dna_path
+    else:
+        return {"error": f"File {filename} not found in storage"}
 
-    # FileResponse automatically handles the headers and 
-    # ensures the file is sent as a 'blob' correctly.
     return FileResponse(
-        path=file_path, 
-        filename=filename, 
+        path=target_path,
+        filename=filename,
         media_type='application/octet-stream'
     )
 

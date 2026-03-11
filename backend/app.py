@@ -56,15 +56,16 @@ def get_files():
 
 @app.get("/download/{filename}")
 async def download_file(filename: str):
-    # Order of search matters!
-    locations = [
+    # Precise path checking
+    paths = [
         os.path.join("storage/reconstructed", filename),
         os.path.join("storage/dna_files", filename),
         os.path.join("storage", filename)
     ]
     
-    for path in locations:
+    for path in paths:
         if os.path.exists(path):
+            # Using FileResponse with explicit headers
             return FileResponse(
                 path=path, 
                 filename=filename, 

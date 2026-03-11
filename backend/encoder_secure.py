@@ -51,13 +51,12 @@ def encode_file(file_path):
     with open(dna_path, "w") as f:
         f.write(f"FILENAME:{filename}\n")
         f.write(f"DATE:{time.strftime('%d-%m-%Y')}\n")
-        f.write("HASH:placeholder\n") # Added this to match the decoder's logic
-        f.write("---\n")
+        f.write("---\n") # This is the 3rd and final header line
         for i in range(0, len(file_bytes), CHUNK_SIZE):
             chunk = file_bytes[i:i+CHUNK_SIZE]
             encoded = rsc.encode(chunk)
             dna_chunk = bytes_to_dna(encoded)
-            # Store original length | dna
+            # We store the length so we can trim the padding later
             f.write(f"{len(chunk)}|{dna_chunk}\n")
 
     end_time = time.time()

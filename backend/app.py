@@ -56,16 +56,20 @@ def get_files():
 
 @app.get("/download/{filename}")
 async def download_file(filename: str):
-    # Check all possible storage locations
-    paths = [
+    # Order of search matters!
+    locations = [
         os.path.join("storage/reconstructed", filename),
         os.path.join("storage/dna_files", filename),
         os.path.join("storage", filename)
     ]
     
-    for path in paths:
+    for path in locations:
         if os.path.exists(path):
-            return FileResponse(path=path, filename=filename, media_type='application/octet-stream')
+            return FileResponse(
+                path=path, 
+                filename=filename, 
+                media_type='application/octet-stream'
+            )
             
     return {"error": "File not found"}
 

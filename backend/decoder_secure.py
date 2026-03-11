@@ -26,9 +26,8 @@ def dna_to_bytes(dna):
 
 
 def decode_file(dna_filename):
-    local_path = f"storage/dna_files/{dna_filename}"
+    local_path = os.path.join("storage/dna_files", dna_filename)
     if not os.path.exists(local_path):
-        print("❌ DNA file not found")
         return
 
     recovered = bytearray()
@@ -36,19 +35,18 @@ def decode_file(dna_filename):
     with open(local_path, "r") as f:
         lines = f.readlines()
 
-    # Smart Header Detection
-    data_start_index = 0
+    # Identify where the DNA data actually starts
+    data_start = 0
     original_filename = dna_filename.replace(".dna", "")
-    
     for i, line in enumerate(lines):
         if "FILENAME:" in line:
             original_filename = line.split(":")[1].strip()
         if "---" in line:
-            data_start_index = i + 1
+            data_start = i + 1
             break
             
-    # Process only lines after the '---' separator
-    for line in lines[data_start_index:]:
+    # Decode the binary data
+    for line in lines[data_start:]:
         if "|" not in line:
             continue
         try:
@@ -56,11 +54,12 @@ def decode_file(dna_filename):
             original_length = int(length_str)
             encoded_bytes = dna_to_bytes(dna_chunk)
             decoded_chunk = rsc.decode(encoded_bytes)[0]
+            # Use original_length to remove Reed-Solomon padding
             recovered.extend(decoded_chunk[:original_length])
         except Exception as e:
-            print(f"Skipping malformed line: {e}")
+            print(f"Skipping line error: {e}")
 
-    # Decrypt the full bytes at once
+    # Decrypt only after the full bytearray is reconstructed
     final_data = bytes(recovered)
     try:
         from security import decrypt_data
@@ -70,14 +69,12 @@ def decode_file(dna_filename):
     except:
         pass
 
-    # Ensure the directory exists
+    # Save to reconstructed folder
     os.makedirs("storage/reconstructed", exist_ok=True)
-    output_path = f"storage/reconstructed/{original_filename}"
-
+    output_path = os.path.join("storage/reconstructed", original_filename)
+    
     with open(output_path, "wb") as f:
         f.write(final_data)
-
-    print(f"✅ Decoding Complete: {output_path}")
 
 
 

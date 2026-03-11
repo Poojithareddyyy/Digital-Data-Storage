@@ -50,7 +50,7 @@ def encode_file(file_path):
     with open(dna_path, "w") as f:
         f.write(f"FILENAME:{filename}\n")
         f.write(f"DATE:{time.strftime('%d-%m-%Y')}\n")
-        f.write("---\n")
+        f.write("---\n") # The decoder now expects exactly 3 lines of header
     
         for i in range(0, len(file_bytes), CHUNK_SIZE):
             chunk = file_bytes[i:i+CHUNK_SIZE]

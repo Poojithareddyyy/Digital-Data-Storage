@@ -56,23 +56,22 @@ def get_files():
 
 @app.get("/download/{filename}")
 async def download_file(filename: str):
-    # Check Reconstructed folder first (for decoded files)
-    recon_path = os.path.join("storage/reconstructed", filename)
-    # Check DNA folder (for encoded files)
-    dna_path = os.path.join("storage/dna_files", filename)
+    # This search order ensures we find the file regardless of where it's stored
+    possible_paths = [
+        os.path.join("storage/reconstructed", filename),
+        os.path.join("storage/dna_files", filename),
+        os.path.join("storage", filename)
+    ]
     
-    if os.path.exists(recon_path):
-        target_path = recon_path
-    elif os.path.exists(dna_path):
-        target_path = dna_path
-    else:
-        return {"error": f"File {filename} not found in storage"}
-
-    return FileResponse(
-        path=target_path,
-        filename=filename,
-        media_type='application/octet-stream'
-    )
+    for path in possible_paths:
+        if os.path.exists(path):
+            return FileResponse(
+                path=path,
+                filename=filename,
+                media_type='application/octet-stream'
+            )
+    
+    return {"error": "File not found"}
 
 
 # ---------------- ENCODE ---------------- #
@@ -103,23 +102,22 @@ async def encode(file: UploadFile = File(...)):
 
 @app.post("/decode")
 async def decode(file: UploadFile = File(...)):
-
-    file_path = f"{DNA_FOLDER}/{file.filename}"
-
-    # Save uploaded DNA file
-    with open(file_path, "wb") as buffer:
+    # 1. Save DNA file
+    dna_path = os.path.join("storage/dna_files", file.filename)
+    with open(dna_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
-    # Run decoder
+    # 2. Run decoder
     decode_file(file.filename)
 
-    output_file = file.filename.replace(".dna", "")
+    # 3. Predict the output filename (stripping .dna)
+    output_filename = file.filename.replace(".dna", "")
 
     return {
         "status": "success",
         "message": "DNA decoded successfully",
-        "decoded_file": output_file,
-        "download_link": f"/download/{output_file}"
+        "decoded_file": output_filename,
+        "download_link": f"/download/{output_filename}"
     }
 
 @app.get("/graph/{filename}")

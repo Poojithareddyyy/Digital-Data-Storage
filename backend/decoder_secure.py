@@ -24,60 +24,54 @@ def dna_to_bytes(dna):
 
     return bytes(byte_array)
 
+
 def decode_file(dna_filename):
-
     local_path = f"storage/dna_files/{dna_filename}"
-
     if not os.path.exists(local_path):
-        print("❌ DNA file not found")
         return
 
     recovered = bytearray()
-
+    
     with open(local_path, "r") as f:
         first_line = f.readline().strip()
-
-        # Check if file contains metadata header
         if first_line.startswith("FILENAME:"):
             original_filename = first_line.replace("FILENAME:", "")
-            hash_line = f.readline().strip()
-            original_hash = hash_line.replace("HASH:", "")
-            f.readline()  # skip ---
+            # Skip the next 2 lines (DATE and ---)
+            f.readline() 
+            f.readline() 
             lines = f.readlines()
-            header_present = True
         else:
-            # No header → external DNA file
             original_filename = dna_filename.replace(".dna", "")
-            lines = [first_line] + f.readlines()
-            header_present = False
+            f.seek(0)
+            lines = f.readlines()
 
     for line in lines:
-        if "|" not in line:
-            continue
-
+        if "|" not in line: continue
         length_str, dna_chunk = line.strip().split("|")
         original_length = int(length_str)
-
+        
         encoded_bytes = dna_to_bytes(dna_chunk)
         decoded_chunk = rsc.decode(encoded_bytes)[0]
-
         recovered.extend(decoded_chunk[:original_length])
 
-    # If secure mode enabled, try decrypt
+    # APPLY DECRYPTION TO THE FULL BYTEARRAY
+    final_data = bytes(recovered)
     try:
         from security import decrypt_data
-        final_data = decrypt_data(bytes(recovered))
+        decrypted = decrypt_data(final_data)
+        if decrypted: # Ensure decryption didn't return None
+            final_data = decrypted
     except Exception as e:
-        print(f"Decryption failed: {e}")
-        final_data = bytes(recovered)
+        print(f"Decryption skipped or failed: {e}")
 
+    # FORCE PATH TO MATCH app.py EXPECTATIONS
     output_path = f"storage/reconstructed/{original_filename}"
+    os.makedirs("storage/reconstructed", exist_ok=True)
 
     with open(output_path, "wb") as f:
         f.write(final_data)
 
-    print("✅ Decoding Complete")
-
+    print(f"✅ Reconstructed: {output_path}")
 
 
 

@@ -55,18 +55,20 @@ def get_files():
 # ---------------- DOWNLOAD ---------------- #
 
 @app.get("/download/{filename}")
-def download(filename: str):
+async def download_file(filename: str):
+    # Ensure we are looking in the correct storage directory
+    file_path = os.path.join("storage", filename)
+    
+    if not os.path.exists(file_path):
+        return {"error": "File not found"}
 
-    dna_path = f"{DNA_FOLDER}/{filename}"
-    recon_path = f"{RECON_FOLDER}/{filename}"
-
-    if os.path.exists(recon_path):
-        return FileResponse(recon_path, filename=filename)
-
-    if os.path.exists(dna_path):
-        return FileResponse(dna_path, filename=filename)
-
-    return {"error": "File not found"}
+    # FileResponse automatically handles the headers and 
+    # ensures the file is sent as a 'blob' correctly.
+    return FileResponse(
+        path=file_path, 
+        filename=filename, 
+        media_type='application/octet-stream'
+    )
 
 
 # ---------------- ENCODE ---------------- #

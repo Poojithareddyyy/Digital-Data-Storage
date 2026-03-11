@@ -32,12 +32,15 @@ export const downloadFile = async (filename) => {
     const res = await fetch(`${API_BASE_URL}/download/${filename}`);
     if (!res.ok) throw new Error("Download failed");
     
-    const blob = await res.blob();
+    const blob = await res.blob(); // Captures the exact binary data
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
+    a.download = filename; // Forces the browser to keep the original extension
     document.body.appendChild(a);
     a.click();
+    
+    // Cleanup
+    window.URL.revokeObjectURL(url);
     a.remove();
 };

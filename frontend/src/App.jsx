@@ -116,8 +116,8 @@ loadStoredFiles();
     try {
       const result = await decodeFile(file);
       setDecodeResult({
-  reconstructedName: result.file || result.filename,
-  fileSize: "Recovered"
+  reconstructedName: result.decoded_file || result.file || result.filename,
+        fileSize: "Recovered"
 });
     } catch (error) {
       console.error("Decoding failed", error);

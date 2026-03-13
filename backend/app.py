@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File,HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -72,7 +72,7 @@ async def download_file(filename: str):
                 media_type='application/octet-stream'
             )
             
-    return {"error": "File not found"}
+    raise HTTPException(status_code=404, detail="File not found")
 
 
 # ---------------- ENCODE ---------------- #
@@ -111,7 +111,10 @@ async def decode(file: UploadFile = File(...)):
     decode_file(file.filename)
 
     # Clean the filename for the response
-    output_filename = file.filename.replace(".dna", "")
+    output_filename = decode_file(file.filename)
+
+    if not output_filename:
+        output_filename = file.filename.replace(".dna", "")
     
     return {
         "status": "success",

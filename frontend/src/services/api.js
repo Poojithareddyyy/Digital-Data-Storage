@@ -1,5 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://digital-data-storage-6.onrender.com";
-
+const API_BASE_URL = "http://localhost:8000";
 export const encodeFile = async (file) => {
     const formData = new FormData();
     formData.append("file", file);

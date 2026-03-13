@@ -68,7 +68,9 @@ def decode_file(dna_filename):
     os.makedirs("storage/reconstructed", exist_ok=True)
     output_path = f"storage/reconstructed/{original_filename}"
     with open(output_path, "wb") as f:
-        f.write(final_data)                               
+        f.write(final_data)  
+    print(f"✅ Decoding Complete: {output_path}")
+    return original_filename                             
 
 
 
